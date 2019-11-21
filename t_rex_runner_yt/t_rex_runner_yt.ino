@@ -45,7 +45,7 @@ void loop() {
 
   if (millis()-lastC>10){lastC=millis();xc--; if (xc==-6){xc=84;}}
 
-  if (xc>-1&&xc<18&&yd>14)GO=1;
+  if (xc>-1&&xc<18&&yd>10)GO=1;
   
   if (millis()-lastU>50){
     score++;
