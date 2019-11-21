@@ -11,3 +11,4 @@ games than the Arduino can normally support.
 ## Currently implemented games
 * T-Rex Runner Game Designed to run on Arduino + Nokia 5110 display
 * Line art slideshow
+* Easy version of [Classic Snake](https://en.wikipedia.org/wiki/Snake_(video_game_genre))
