@@ -16,9 +16,19 @@ Adafruit_PCD8544 lcd = Adafruit_PCD8544(9, 10, 11, 13, 12);
 #define PERCY_START 1
 #define PERCY_STOP 2
 
+/* Button Definitions */
+#define UP_BUTTON 2
+#define DOWN_BUTTON 4
+#define LEFT_BUTTON 5
+#define RIGHT_BUTTON 3
+
 /* Train locations */
 int thomas_loc = 0;
 int percy_loc = 0;
+
+/* Train speed */
+int thomas_speed = 2;
+int percy_speed = 2;
 
 /* crash detection */
 int is_crash = 0;
@@ -38,12 +48,13 @@ void loop() {
  * Move trains
  */
 void train_move() {
+  read_buttons();
+  
   lcd.clearDisplay();
   draw_train_track();
   
-
-  thomas_loc = (thomas_loc + 2)%MAX_WIDTH;
-  percy_loc = (percy_loc + 2)%MAX_HEIGHT;
+  thomas_loc = (thomas_loc + thomas_speed)%MAX_WIDTH;
+  percy_loc = (percy_loc + percy_speed)%MAX_HEIGHT;
 
   if ((abs(MAX_WIDTH/2 - thomas_loc) < 10) && 
      (abs(MAX_HEIGHT/2 - percy_loc) < 10))
@@ -97,5 +108,32 @@ void write_crash() {
   lcd.setTextColor(BLACK);
   lcd.setTextSize(1);
   lcd.print("CRASH!!");
+}
+
+void read_joystick() {
+  
+}
+
+void read_buttons() {
+  int thomas_start = digitalRead(RIGHT_BUTTON);
+  int thomas_stop = digitalRead(LEFT_BUTTON);
+  int percy_start = digitalRead(UP_BUTTON);
+  int percy_stop = digitalRead(DOWN_BUTTON);
+
+  if(thomas_start) {
+    thomas_speed += 2;
+  }
+
+  if(thomas_stop) {
+    thomas_speed -= 2;
+  }
+
+  if(percy_start) {
+    percy_speed += 2;
+  }
+
+  if(percy_stop) {
+    percy_speed -= 2;
+  }
 }
 
