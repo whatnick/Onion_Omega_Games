@@ -9,12 +9,14 @@ Adafruit_PCD8544 lcd = Adafruit_PCD8544(9, 10, 11, 13, 12);
 #define MAX_WIDTH  84
 #define MAX_HEIGHT 48
 
-/* constants */
-// TODO: Convert to ENUM's
+/* constants for game params*/
 #define THOMAS_START    1
 #define THOMAS_STOP     2
 #define PERCY_START 1
 #define PERCY_STOP 2
+#define CRASH_ZONE 5
+#define MAX_SPEED 10
+#define MIN_SPEED -10
 
 /* Button Definitions */
 #define UP_BUTTON 2
@@ -49,15 +51,23 @@ void loop() {
  */
 void train_move() {
   read_buttons();
+  read_joystick();
+  cutoff_speed();
   
   lcd.clearDisplay();
   draw_train_track();
   
   thomas_loc = (thomas_loc + thomas_speed)%MAX_WIDTH;
+  if (thomas_loc < 0) {
+    thomas_loc = MAX_WIDTH;
+  }
   percy_loc = (percy_loc + percy_speed)%MAX_HEIGHT;
+  if (percy_loc < 0) {
+    percy_loc = MAX_HEIGHT;
+  }
 
-  if ((abs(MAX_WIDTH/2 - thomas_loc) < 10) && 
-     (abs(MAX_HEIGHT/2 - percy_loc) < 10))
+  if ((abs(MAX_WIDTH/2 - thomas_loc) < CRASH_ZONE) && 
+     (abs(MAX_HEIGHT/2 - percy_loc) < CRASH_ZONE))
   {
     is_crash = 1;
   }
@@ -76,6 +86,20 @@ void train_move() {
   delay(100);
 }
 
+void cutoff_speed(){
+  if (thomas_speed > MAX_SPEED){
+    thomas_speed = MAX_SPEED;
+  }
+  if (thomas_speed < MIN_SPEED){
+    thomas_speed = MIN_SPEED;
+  }
+  if (percy_speed > MAX_SPEED){
+    percy_speed = MAX_SPEED;    
+  }
+  if (percy_speed < MIN_SPEED) {
+    percy_speed = MIN_SPEED;
+  }
+}
 
 void draw_train_track() {
   // Horizontal train track
@@ -111,7 +135,20 @@ void write_crash() {
 }
 
 void read_joystick() {
-  
+  int vert = analogRead(A1);
+  int horiz = analogRead(A0);
+  if (vert < 100) {
+    percy_speed += 1;
+  }
+  if (vert > 900) {
+    percy_speed -= 1;
+  }
+  if (horiz < 100) {
+    thomas_speed -= 1;
+  }
+  if (horiz > 900) {
+    thomas_speed += 1;
+  }
 }
 
 void read_buttons() {
