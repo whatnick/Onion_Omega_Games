@@ -34,6 +34,8 @@ int percy_speed = 2;
 
 /* crash detection */
 int is_crash = 0;
+int score = 0;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -56,6 +58,7 @@ void train_move() {
   
   lcd.clearDisplay();
   draw_train_track();
+  write_score();
   
   thomas_loc = (thomas_loc + thomas_speed)%MAX_WIDTH;
   if (thomas_loc < 0) {
@@ -73,6 +76,7 @@ void train_move() {
   }
 
   if(is_crash){
+    score++;
     write_crash();
   }
 
@@ -132,6 +136,13 @@ void write_crash() {
   lcd.setTextColor(BLACK);
   lcd.setTextSize(1);
   lcd.print("CRASH!!");
+}
+
+void write_score() {
+  lcd.setCursor(MAX_WIDTH-5,0);
+  lcd.setTextColor(BLACK);
+  lcd.setTextSize(1);
+  lcd.print(score);
 }
 
 void read_joystick() {
